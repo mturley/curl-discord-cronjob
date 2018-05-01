@@ -13,8 +13,6 @@ message_content=`json_escape "$2"`
 # Construct a JSON object with those values
 json="{\"username\": $message_username, \"content\": $message_content}"
 
-echo "JSON?? $json"
-
 # Send JSON to Discord using curl
 curl -H "Content-Type: application/json" \
 -X POST \

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+SCRIPT=`realpath $0`; DIRNAME=`dirname $SCRIPT`
+
+message=`df -h ~`
+$DIRNAME/send-message "Disk Usage Report" "\`\`\`$message\`\`\`"

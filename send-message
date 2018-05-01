@@ -1,0 +1,21 @@
+#!/bin/bash
+
+webhook_url='YOUR_URL_HERE'
+
+json_escape () {
+    printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'
+}
+
+# Read and escape username and message from command line arguments
+message_username=`json_escape "$1"`
+message_content=`json_escape "$2"`
+
+# Construct a JSON object with those values
+json="{\"username\": $message_username, \"content\": $message_content}"
+
+echo "JSON?? $json"
+
+# Send JSON to Discord using curl
+curl -H "Content-Type: application/json" \
+-X POST \
+-d "$json" $webhook_url

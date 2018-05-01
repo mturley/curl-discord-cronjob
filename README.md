@@ -26,3 +26,5 @@ Otherwise, you can use that script as a usage example for `send-message`:
 message=`df -h ~`
 $DIRNAME/send-message "Disk Usage Report" "\`\`\`$message\`\`\`"
 ```
+
+Note: The escaped triple-backticks around `$message` in this example are what provide the code-block styling in the screenshot above. Those are optional, and any Markdown can be used.

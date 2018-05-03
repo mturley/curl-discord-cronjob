@@ -2,15 +2,26 @@
 
 SCRIPT=`realpath $0`; DIRNAME=`dirname $SCRIPT`
 
+DEBUGMODE=0
+
+# Helper functions for precise units
+kb2gb() {
+  echo "$1" "$2" | awk '{ foo = ($1 + $2) / 1024 / 1024 ; print foo }'
+}
+
+percentage() {
+  echo "$1" "$2" | awk '{ print ($1 / ($1 + $2)) * 100 }' 
+}
+
 # Do some free space calculations with df and awk
-dfk=`df -k /home/mturley`
+dfk=`df -k ~`
 kbused=`echo "$dfk" | awk 'NR == 2 { print $3 }'`
 kbfree=`echo "$dfk" | awk 'NR == 2 { print $4 }'`
-gbtotal=`echo "$kbused" "$kbfree" | awk '{ foo = ($1 + $2) / 1024 / 1024 ; print foo }'`
-gbused=`echo "$kbused" | awk '{ foo = $1 / 1024 / 1024 ; print foo }'`
-gbfree=`echo "$kbfree" | awk '{ foo = $1 / 1024 / 1024 ; print foo }'`
-percentused=`echo "$kbused" "$kbfree" | awk '{ print ($1 / ($1 + $2)) * 100 }'`
-percentfree=`echo "$kbused" "$kbfree" | awk '{ print ($2 / ($1 + $2)) * 100 }'`
+gbtotal=`kb2gb $kbused $kbfree`
+gbused=`kb2gb $kbused`
+gbfree=`kb2gb $kbfree`
+percentused=`percentage $kbused $kbfree`
+percentfree=`percentage $kbfree $kbused`
 
 # Make it into something readable
 read -r -d '' message << EOM
@@ -18,4 +29,10 @@ read -r -d '' message << EOM
 \`\`\`Available: $gbfree GB ($percentfree%)\`\`\`
 EOM
 
-$DIRNAME/send-message "Disk Usage Report" "$message"
+if [ $DEBUGMODE -eq 1 ]; then
+  echo "Not sending message:"
+  echo "$message"
+else
+  $DIRNAME/send-message "Disk Usage Report" "$message"
+fi
+

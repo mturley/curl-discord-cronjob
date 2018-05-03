@@ -25,8 +25,8 @@ percentfree=`percentage $kbfree $kbused`
 
 # Make it into something readable
 read -r -d '' message << EOM
-\`\`\`Used: $gbused / $gbtotal GB ($percentused%)\`\`\`
-\`\`\`Available: $gbfree GB ($percentfree%)\`\`\`
+\`\`\`$gbused GB Used ($percentused% of $gbtotal GB)\`\`\`
+\`\`\`$gbfree GB Available ($percentfree%)\`\`\`
 EOM
 
 if [ $DEBUGMODE -eq 1 ]; then

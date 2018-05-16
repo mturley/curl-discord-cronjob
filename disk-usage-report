@@ -14,19 +14,22 @@ percentage() {
 }
 
 # Do some free space calculations with df and awk
-dfk=`df -k ~`
+dfk=`df -k /home`
 kbused=`echo "$dfk" | awk 'NR == 2 { print $3 }'`
 kbfree=`echo "$dfk" | awk 'NR == 2 { print $4 }'`
 gbtotal=`kb2gb $kbused $kbfree`
 gbused=`kb2gb $kbused`
 gbfree=`kb2gb $kbfree`
+gbusedf=`printf "%'.3f\n" $gbused`
+gbfreef=`printf "%'.3f\n" $gbfree`
 percentused=`percentage $kbused $kbfree`
 percentfree=`percentage $kbfree $kbused`
 
 # Make it into something readable
 read -r -d '' message << EOM
-\`\`\`$gbused GB Used ($percentused% of $gbtotal GB)\`\`\`
-\`\`\`$gbfree GB Available ($percentfree%)\`\`\`
+**$gbusedf GB Used** \`($percentused%)\`
+$gbfreef GB Remaining
+\``TZ=America/New_York date +"%r"` EST\`
 EOM
 
 if [ $DEBUGMODE -eq 1 ]; then

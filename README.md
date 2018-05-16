@@ -1,47 +1,60 @@
 # curl-discord-cronjob
+
 Send the output of a cron job to a Discord Webhook, via cURL.
 
 ![screenshot](https://raw.githubusercontent.com/mturley/curl-discord-cronjob/master/screenshot.png)
 
-## Dependencies
-bash, cron, curl, python (any old version, just for JSON escaping)
+## Note: The `example` script here does still report disk usage...
 
-## Setup
-1. Clone this repo on a server somewhere.
-2. Edit the `send-message` script so it contains a real Discord Webhook URL.
-3. Add a usage of `send-message` to your cron jobs. You can do this with `sudo crontab -e`, or just by symbolically linking a script that runs `send-message` into your `/etc/cron.daily` or `/etc/cron.hourly` if present on your system:
-```
-sudo ln -s /path/to/curl-discord-cronjob/disk-usage-report /etc/cron.daily
-```
-This will schedule a daily disk usage report to be posted to your Discord channel.
+...but I moved the much fancier `disk-usage-report` script over to [stuffware/discord-disk-usage-report](https://github.com/stuffware/discord-disk-usage-report), because I wanted to make it easier to fork and rename this `curl-discord-cronjob` repo multiple times for other cron webhooks, without necessarily having a git submodule dependency in each one (which the new repo introduces to display an ASCII progress bar). Because git submodules are wack, yo, and sort of an unnecessary hassle for you, the person finding this on Google, I figured I'd keep them contained to the specific webhook(s) where I use them, so you can keep it simple.
 
-### NOTE: `disk-usage-report` depends on a git submodule.
-The `disk-usage-report` script provided will only work if you initialize the `ProgressBar` submodule, by using these stupid steps that git decided were necessary:
-1. Go to the root directory of this repo.
-2. `cd ProgressBar`
-3. `git submodule init`
-4. `git submodule update`
-Then you can `cd ..` and run `./disk-usage-report` to make sure that worked!
-
-## About the `send-message` script
-`send-message` takes two command line arguments: a username, and a message. The username can be arbitrary,
-this is just the name the user-facing "bot" will use when posting.
-
-If you want a quick and easy way to schedule a disk usage report, just use the `disk-usage-report` script as in my example above.
-Otherwise, you can use that script as a usage example for `send-message`:
-
-```
-message=`df -h ~`
-$DIRNAME/send-message "Disk Usage Report" "\`\`\`$message\`\`\`"
-```
-
-Note: The escaped triple-backticks around `$message` in this example are what provide the code-block styling in the screenshot above. Those are optional, and any Markdown can be used.
-
-# Update:
-The screenshot at the top of this file matches the `df -h ~` example, but that's no longer what `disk-usage-report` does, I made some updates.
-
-Hold my beer, I'm using [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
-
-Bringing in https://github.com/mturley/ProgressBar to make the output of `disk-usage-report` a little more fancy...
+Anyway, if you head [over yonder](https://github.com/stuffware/discord-disk-usage-report), you'll get a nice handy `setup` script, and you'll get to impress your friends with the following "bot":
 
 ![screenshot2](https://raw.githubusercontent.com/mturley/curl-discord-cronjob/master/screenshot2.png)
+
+Isn't that nice? Make sure you read the README there, though. If you want something a little less involved, stay here and read on.
+
+## Dependencies
+
+* bash
+* curl
+* python (any old version, just for JSON escaping)
+* cron, or something like cron, to make it act like a "service".
+
+## Setup
+
+1. Clone (or fork and then clone!) this repo on a server somewhere.
+2. Copy, rename and edit the `example` script:
+   * Change the `webhook_url` variable to contain your real Discord Webhook URL.
+   * Change the `message_username` variable to the nick you want the bot to use.
+   * Change the `message_content` variable to whatever you want. Don't let your dreams be dreams.
+3. Give the script a test run! You can just `./example` or `./my-renamed-example` from the command line.
+4. If your message showed up in Discord, you're almost done. To make the script run automatically, there are a number of ways, but the simplest is to just use `cron`. You have two options for adding a `cron` job:
+   * You can configure any custom timing you like with `sudo crontab -e`, which requires you to read the manual a little bit...
+   * ...or if you just want the webhook to be called hourly, daily, weekly, or monthly (etc), if your system is running a new enough version of `cron`, you can just symbolically link your script into `/etc/cron.daily/` or `/etc/cron.hourly/`, etc, if they are present on your system:
+
+   ```sh
+   sudo ln -s /path/to/curl-discord-cronjob/my-renamed-example /etc/cron.daily/
+   ```
+
+   This will schedule a daily disk usage report to be posted to your Discord channel.
+   (If you rename `example` to `my-renamed-example`. Which, of course, you should not.)
+
+## About the `send-message` script
+
+`send-message` takes three command line arguments: a Discord Webhook URL, a username/nick for the bot to use, and a message. The username can be arbitrary,
+this is just the name the user-facing "bot" will use when posting.
+
+To see `send-message` in action, just take a look at my `example` script! It's very short. Here it is again:
+
+```bash
+#!/bin/bash
+
+SCRIPT=`realpath $0`; DIRNAME=`dirname $SCRIPT`
+
+webhook_url='YOUR_DISCORD_WEBHOOK_URL_HERE'
+bot_username='Disk Usage Report'
+message=`df -h ~`
+
+$DIRNAME/send-message "$webhook_url" "$bot_username" "$message"
+```

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SCRIPT=`realpath $0`; DIRNAME=`dirname $SCRIPT`
+
+webhook_url='YOUR_DISCORD_WEBHOOK_URL_HERE'
+bot_username='Disk Usage Report'
+message=`df -h ~`
+
+$DIRNAME/send-message "$webhook_url" "$bot_username" "$message"

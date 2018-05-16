@@ -43,3 +43,5 @@ The screenshot at the top of this file matches the `df -h ~` example, but that's
 Hold my beer, I'm using [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 Bringing in https://github.com/mturley/ProgressBar to make the output of `disk-usage-report` a little more fancy...
+
+![screenshot2](https://raw.githubusercontent.com/mturley/curl-discord-cronjob/master/screenshot2.png)
